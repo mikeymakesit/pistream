@@ -1,0 +1,13 @@
+[Unit]
+Description=Live stream service
+After=network.target nginx.service
+
+[Service]
+Type=simple
+Restart=always
+User=root
+ExecStart=/bin/sh /root/bin/livestream.sh
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install] 
+WantedBy=multi-user.target

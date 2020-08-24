@@ -1,0 +1,41 @@
+#####
+The h264_omx encoder uses GPU encoding on the Raspberry Pi (4, at least).  This is desirable for optimal encoding performance.
+
+
+#####
+# List types, resolutions and framerates supported by the camera device
+v4l2-ctl --list-formats-ext -d /dev/video0
+
+
+#####
+#Listing available ffmpeg codecs (encoding and decoding)
+ffmpeg -decoders | grep mmal
+ffmpeg -encoders | grep omx
+
+#Listing available formats and resolutions for the capture input :
+ffmpeg -f v4l2 -list_formats all -i /dev/video0
+
+
+#####
+# EXAMPLES
+#Doing a raw "capture and place to file" with input resolution specified (still using mux depending on file extension)
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec copy output.avi
+
+#Standards encoders (not for Raspberry Pi unless you are not hurry)
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec:v libx264 output-x264.mkv
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec:v libx265 output-x265.mkv
+
+#Same with raspberry Pi special encoder (omx - which seems not to be only about Raspberry Pi)
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec:v h264_omx output-1280x800-h264.mkv
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec:v h264_omx -b:v 2048k output-1280x800-h264-bitrate2048k.mkv
+
+#Can be used to convert some file, too
+ffmpeg -i inputFile.avi -codec:v h264_omx outputFile-1280x800-h264.mkv
+ffmpeg -i inputFile.avi -codec:v h264_omx -b:v 2048k outputFile-1280x800-h264-bitrate2048k.mkv
+
+#Displaying the output into VLC instead of recording it to a file:
+ffmpeg -f v4l2 -video_size 1280x800 -i /dev/video0 -codec:v h264_omx -b:v 2048k -f matroska - | cvlc - -vvv
+
+#Streaming it:
+ffmpeg -f v4l2 -framerate 30 -video_size 848x480 -i /dev/video0 -codec:v h264_omx -b:v 2048k -f flv rtmp://live-sea.twitch.tv/app/STREAM_KEY
+
