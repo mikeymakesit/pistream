@@ -48,7 +48,7 @@ cp -f nginx/nginx.service $NGINXSERVICE
 
 # LIVESTREAM SERVICE
 echo -e '\e[1mInstalling stream service\e[0m'
-cp -f livestream.service /etc/systemd/system/
+cp -f livestream/livestream.service /etc/systemd/system/
 
 
 # SERVICES
@@ -60,7 +60,7 @@ systemctl enable livestream
 # DONE
 echo -e '\e[1mFINISHED with install\e[0m'
 read -p 'Do you want to reboot now? [y/n]: ' do_reboot
-if [ $do_reboot -eq 'y' ]; then
+if [ $do_reboot = 'y' ]; then
     echo -e '\e[1mRebooting now!\e[0m'
     reboot
 fi
